@@ -1,8 +1,8 @@
-# VERSION 0.1
+# VERSION 0.2
 # AUTHOR:         Olav Grønås Gjerde <olav@backupbay.com>
-# DESCRIPTION:    Image with moinmoin wiki, uwsgi, nginx and self signed SSL
-# TO_BUILD:       docker build -rm -t moinmoin .
-# TO_RUN:         docker run --rm -p [80:80,443:443] moinmoin
+# DESCRIPTION:    Image with MoinMoin wiki, uwsgi, nginx and self signed SSL
+# TO_BUILD:       docker build -t moinmoin .
+# TO_RUN:         docker run -p 80:80 -p 443:443 --name my_wiki moinmoin
 
 FROM ubuntu:trusty
 MAINTAINER Olav Grønås Gjerde <olav@backupbay.com>
@@ -16,7 +16,7 @@ RUN apt-get update
 RUN apt-get -y upgrade
 
 # Install software
-RUN apt-get -y install python-pip wget nginx uwsgi uwsgi-plugin-python
+RUN apt-get -y install python wget nginx uwsgi uwsgi-plugin-python
 
 # Download MoinMoin
 RUN wget \
@@ -32,6 +32,7 @@ RUN cd moinmoin && python setup.py install --force --prefix=/usr/local
 ADD wikiconfig.py /usr/local/share/moin/
 RUN mkdir /usr/local/share/moin/underlay
 RUN chown -R www-data:www-data /usr/local/share/moin/underlay
+# Because of a permission error with chown I change the user here
 USER www-data
 RUN cd /usr/local/share/moin/ && tar xf underlay.tar -C underlay --strip-components=1
 USER root
