@@ -38,10 +38,13 @@ USER root
 RUN chown -R www-data:www-data /usr/local/share/moin/data
 ADD logo.png /usr/local/lib/python2.7/dist-packages/MoinMoin/web/static/htdocs/common/
 
-# Add virtualhost to nginx
+# Configure nginx
+ADD nginx.conf /etc/nginx/
 ADD moinmoin.conf /etc/nginx/sites-available/
+RUN mkdir -p /var/cache/nginx/cache
 RUN ln -s /etc/nginx/sites-available/moinmoin.conf \
   /etc/nginx/sites-enabled/moinmoin.conf
+RUN rm /etc/nginx/sites-enabled/default
 
 # Create self signed certificate
 ADD generate_ssl_key.sh /usr/local/bin/
@@ -49,7 +52,7 @@ RUN /usr/local/bin/generate_ssl_key.sh moinmoin.example.org
 RUN mv cert.pem /etc/ssl/certs/
 RUN mv key.pem /etc/ssl/private/
 
-VOLUME /usr/local/share/moin/data/pages
+VOLUME /usr/local/share/moin/data
 
 EXPOSE 80
 EXPOSE 443
