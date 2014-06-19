@@ -38,12 +38,6 @@ USER root
 RUN chown -R www-data:www-data /usr/local/share/moin/data
 ADD logo.png /usr/local/lib/python2.7/dist-packages/MoinMoin/web/static/htdocs/common/
 
-# THIS IS NOT IN USE AS THE UWSGI UBUNTU SERVICE DOESNT WORK
-# Setup uwsgi
-#ADD moinmoin.ini /etc/uwsgi/apps-available/
-#RUN ln -s /etc/uwsgi/apps-available/moinmoin.ini \
-#  /etc/uwsgi/apps-enabled/moinmoin.ini
-
 # Add virtualhost to nginx
 ADD moinmoin.conf /etc/nginx/sites-available/
 RUN ln -s /etc/nginx/sites-available/moinmoin.conf \
@@ -55,7 +49,7 @@ RUN /usr/local/bin/generate_ssl_key.sh moinmoin.example.org
 RUN mv cert.pem /etc/ssl/certs/
 RUN mv key.pem /etc/ssl/private/
 
-#VOLUME /docker-registry-storage
+VOLUME /usr/local/share/moin/data/pages
 
 EXPOSE 80
 EXPOSE 443

@@ -78,7 +78,7 @@ class Config(multiconfig.DefaultConfig):
     #page_front_page = u"MyStartingPage"
 
     # b) if wiki content is maintained in many languages
-    #page_front_page = u"FrontPage"
+    page_front_page = u"FrontPage"
 
     # The interwiki name used in interwiki links
     #interwikiname = u'UntitledWiki'
@@ -91,7 +91,7 @@ class Config(multiconfig.DefaultConfig):
 
     # This is checked by some rather critical and potentially harmful actions,
     # like despam or PackageInstaller action:
-    #superuser = [u"YourName", ]
+    superuser = [u"mmAdmin", ]
 
     # IMPORTANT: grant yourself admin rights! replace YourName with
     # your user name. See HelpOnAccessControlLists for more help.
@@ -133,7 +133,7 @@ class Config(multiconfig.DefaultConfig):
     # according to the user selected language. [Unicode]
     navi_bar = [
         # If you want to show your page_front_page here:
-        #u'%(page_front_page)s',
+        u'%(page_front_page)s',
         u'RecentChanges',
         u'FindPage',
         u'HelpContents',
