@@ -1,4 +1,4 @@
-# VERSION 0.2
+# VERSION 0.3
 # AUTHOR:         Olav Grønås Gjerde <olav@backupbay.com>
 # DESCRIPTION:    Image with MoinMoin wiki, uwsgi, nginx and self signed SSL
 # TO_BUILD:       docker build -t moinmoin .
@@ -12,11 +12,10 @@ ENV MM_VERSION 1.9.7
 ENV MM_CSUM 38b7783abb8530253545d780c8019721
 
 # Update
-RUN apt-get update
-RUN apt-get -y upgrade
+RUN apt-get update && apt-get -y upgrade
 
 # Install software
-RUN apt-get -y install python wget nginx uwsgi uwsgi-plugin-python
+RUN apt-get -y install python wget nginx uwsgi uwsgi-plugin-python dialog
 
 # Download MoinMoin
 RUN wget \
@@ -53,6 +52,12 @@ RUN /usr/local/bin/generate_ssl_key.sh moinmoin.example.org
 RUN mv cert.pem /etc/ssl/certs/
 RUN mv key.pem /etc/ssl/private/
 
+# Add Exit Alias to Root
+RUN echo "alias exit='dialog "\
+  "--title \"Warning\" --defaultno "\
+  "--yesno \"Exit will shut down the container. "\
+  "Really exit?\" 5 55;[ \$? == 0 ] && exit'" >> /etc/profile
+
 VOLUME /usr/local/share/moin/data
 
 EXPOSE 80
@@ -70,5 +75,4 @@ CMD service nginx start && \
     --harakiri 10 \
     --die-on-term \
     --daemonize /var/log/uwsgi/app/moinmoin.log \ 
-  && /bin/bash
-
+    && su -
