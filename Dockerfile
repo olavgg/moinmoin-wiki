@@ -72,7 +72,7 @@ CMD service nginx start && \
     -M -p 4 \
     --chdir /usr/local/share/moin \
     --python-path /usr/local/share/moin \
-    --harakiri 10 \
+    --harakiri 30 \
     --die-on-term \
     --daemonize /var/log/uwsgi/app/moinmoin.log \ 
     && su -
