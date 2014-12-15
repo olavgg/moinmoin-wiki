@@ -1,4 +1,4 @@
-# VERSION 0.3
+# VERSION 0.4
 # AUTHOR:         Olav Grønås Gjerde <olav@backupbay.com>
 # DESCRIPTION:    Image with MoinMoin wiki, uwsgi, nginx and self signed SSL
 # TO_BUILD:       docker build -t moinmoin .
