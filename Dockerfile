@@ -1,31 +1,33 @@
-# VERSION 0.4
+# VERSION 0.5
 # AUTHOR:         Olav Grønås Gjerde <olav@backupbay.com>
 # DESCRIPTION:    Image with MoinMoin wiki, uwsgi, nginx and self signed SSL
 # TO_BUILD:       docker build -t moinmoin .
 # TO_RUN:         docker run -it -p 80:80 -p 443:443 --name my_wiki moinmoin
 
-FROM ubuntu:trusty
+FROM debian:jessie
 MAINTAINER Olav Grønås Gjerde <olav@backupbay.com>
 
 # Set the version you want of MoinMoin
 ENV MM_VERSION 1.9.8
 ENV MM_CSUM 4a616d12a03f51787ac996392f9279d0398bfb3b
 
-# Update
-RUN apt-get update -qq && apt-get -qqy upgrade
-
 # Install software
-RUN apt-get -qqy install python wget nginx uwsgi uwsgi-plugin-python rsyslog
-RUN apt-get clean
+RUN apt-get update && apt-get install -qqy --no-install-recommends \
+  python \
+  curl \
+  openssl \
+  nginx \
+  uwsgi \
+  uwsgi-plugin-python \
+  rsyslog
 
 # Download MoinMoin
-RUN wget \
+RUN curl -Ok \
   https://bitbucket.org/thomaswaldmann/moin-1.9/get/$MM_VERSION.tar.gz
-RUN if [ "$MM_CSUM" != "$(shasum $MM_VERSION.tar.gz | awk '{print($1)}')" ];\
+RUN if [ "$MM_CSUM" != "$(sha1sum $MM_VERSION.tar.gz | awk '{print($1)}')" ];\
   then exit 1; fi;
 RUN mkdir moinmoin
 RUN tar xf $MM_VERSION.tar.gz -C moinmoin --strip-components=1
-RUN rm $MM_VERSION.tar.gz
 
 # Install MoinMoin
 RUN cd moinmoin && python setup.py install --force --prefix=/usr/local
@@ -33,6 +35,8 @@ ADD wikiconfig.py /usr/local/share/moin/
 RUN mkdir /usr/local/share/moin/underlay
 RUN chown -Rh www-data:www-data /usr/local/share/moin/underlay
 # Because of a permission error with chown I change the user here
+# This is related to an known permission issue with Docker and AUFS
+# https://github.com/docker/docker/issues/1295
 USER www-data
 RUN cd /usr/local/share/moin/ && tar xf underlay.tar -C underlay --strip-components=1
 USER root
@@ -52,6 +56,14 @@ ADD generate_ssl_key.sh /usr/local/bin/
 RUN /usr/local/bin/generate_ssl_key.sh moinmoin.example.org
 RUN mv cert.pem /etc/ssl/certs/
 RUN mv key.pem /etc/ssl/private/
+
+# Cleanup
+RUN rm $MM_VERSION.tar.gz
+RUN rm -rf /moinmoin
+RUN rm /usr/local/share/moin/underlay.tar
+RUN apt-get purge -qqy curl
+RUN apt-get autoremove -qqy && apt-get clean
+RUN rm -rf /tmp/* /var/lib/apt/lists/*
 
 VOLUME /usr/local/share/moin/data
 
