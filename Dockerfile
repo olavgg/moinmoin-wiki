@@ -4,7 +4,7 @@
 # TO_BUILD:       docker build -t moinmoin .
 # TO_RUN:         docker run -d -p 80:80 -p 443:443 --name my_wiki moinmoin
 
-FROM debian:stretch
+FROM debian:stretch-slim
 MAINTAINER Olav Grønås Gjerde <olav@backupbay.com>
 
 # Set the version you want of MoinMoin
@@ -40,6 +40,11 @@ RUN chown -Rh www-data:www-data /usr/local/share/moin/underlay
 USER www-data
 RUN cd /usr/local/share/moin/ && tar xf underlay.tar -C underlay --strip-components=1
 USER root
+
+# Copy default data into a new folder, we will use this to add content
+# if you start a new container using volumes
+RUN cp -r /usr/local/share/moin/data /usr/local/share/moin/bootstrap-data
+
 RUN chown -R www-data:www-data /usr/local/share/moin/data
 ADD logo.png /usr/local/lib/python2.7/dist-packages/MoinMoin/web/static/htdocs/common/
 
@@ -57,6 +62,9 @@ RUN /usr/local/bin/generate_ssl_key.sh moinmoin.example.org
 RUN mv cert.pem /etc/ssl/certs/
 RUN mv key.pem /etc/ssl/private/
 
+# Add the start shell script
+ADD start.sh /usr/local/bin/
+
 # Cleanup
 RUN rm $MM_VERSION.tar.gz
 RUN rm -rf /moinmoin
@@ -70,14 +78,4 @@ VOLUME /usr/local/share/moin/data
 EXPOSE 80
 EXPOSE 443
 
-CMD service rsyslog start && service nginx start && \
-  uwsgi --uid www-data \
-    -s /tmp/uwsgi.sock \
-    --plugins python \
-    --pidfile /var/run/uwsgi-moinmoin.pid \
-    --wsgi-file server/moin.wsgi \
-    -M -p 4 \
-    --chdir /usr/local/share/moin \
-    --python-path /usr/local/share/moin \
-    --harakiri 30 \
-    --die-on-term
+CMD start.sh
