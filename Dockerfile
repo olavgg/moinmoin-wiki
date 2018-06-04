@@ -1,15 +1,15 @@
-# VERSION 0.5
+# VERSION 0.6
 # AUTHOR:         Olav Grønås Gjerde <olav@backupbay.com>
 # DESCRIPTION:    Image with MoinMoin wiki, uwsgi, nginx and self signed SSL
 # TO_BUILD:       docker build -t moinmoin .
-# TO_RUN:         docker run -it -p 80:80 -p 443:443 --name my_wiki moinmoin
+# TO_RUN:         docker run -d -p 80:80 -p 443:443 --name my_wiki moinmoin
 
-FROM debian:jessie
+FROM debian:stretch
 MAINTAINER Olav Grønås Gjerde <olav@backupbay.com>
 
 # Set the version you want of MoinMoin
-ENV MM_VERSION 1.9.8
-ENV MM_CSUM 4a616d12a03f51787ac996392f9279d0398bfb3b
+ENV MM_VERSION 1.9.9
+ENV MM_CSUM 47c86460a1ba9369da2be4e5e19f445cf4a4e6d4
 
 # Install software
 RUN apt-get update && apt-get install -qqy --no-install-recommends \
