@@ -2,7 +2,7 @@ moinmoin-wiki
 =============
 
 Docker image with the Moinmoin wiki engine, uwsgi, nginx and self signed SSL.
-Everything included with minumum fuzz and just works.
+Everything included with minimum fuzz and just works.
 
 You can automatically download and run this with the following command
     
