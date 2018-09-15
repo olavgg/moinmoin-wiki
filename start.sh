@@ -8,6 +8,16 @@ if ! [ "$(ls -A /usr/local/share/moin/data)" ]; then
     chown -R www-data:www-data /usr/local/share/moin/data
 fi
 
+# Enable SSL by default
+if [ "$NOSSL" = "1" ]; then
+    echo "*******USING NOSSL*******"
+    ln -sf /etc/nginx/sites-available/moinmoin-nossl.conf \
+        /etc/nginx/sites-enabled/moinmoin.conf
+else
+    echo "*******USING SSL*******"
+    ln -sf /etc/nginx/sites-available/moinmoin-ssl.conf \
+        /etc/nginx/sites-enabled/moinmoin.conf
+fi
 
 service rsyslog start && service nginx start && uwsgi \
     --uid www-data \

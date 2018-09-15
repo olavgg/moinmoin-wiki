@@ -70,6 +70,7 @@ class Config(multiconfig.DefaultConfig):
     # Wiki logo. You can use an image, text or both. [Unicode]
     # For no logo or text, use '' - the default is to show the sitename.
     # See also url_prefix setting below!
+    #logo_string = u'<img src="%s/common/moinmoin.png" alt="MoinMoin Logo">' % url_prefix_static
     logo_string = u'<img src="%s/common/logo.png" alt="Logo">' % url_prefix_static
 
     # name of entry page / front page [Unicode], choose one of those:
@@ -93,10 +94,24 @@ class Config(multiconfig.DefaultConfig):
     # like despam or PackageInstaller action:
     superuser = [u"mmAdmin", ]
 
+    # Some actions are by default only enabled for superusers and disabled
+    # for everybody else.
+    # 'newaccount' is one of these (used to let visitors create new accounts).
+    # You can create wiki users on the shell by using "moin account create".
+    # A superuser also can use "Settings" -> "Switch user" to create users.
+    # If you need the newaccount action for everybody (e.g. to create your
+    # very first [superuser] account), you can (temporarily) enable it:
+    actions_superuser = multiconfig.DefaultConfig.actions_superuser[:]
+    actions_superuser.remove('newaccount')
+
     # IMPORTANT: grant yourself admin rights! replace YourName with
     # your user name. See HelpOnAccessControlLists for more help.
     # All acl_rights_xxx options must use unicode [Unicode]
-    #acl_rights_before = u"YourName:read,write,delete,revert,admin"
+    #acl_rights_before = u"mmAdmin:read,write,delete,revert,admin"
+
+    # This is the default ACL that applies to pages without an ACL.
+    # Adapt it to your needs, consider using an EditorGroup.
+    acl_rights_default = u"Trusted:read,write,delete,revert Known:read All:read,write,delete,revert"
 
     # The default (ENABLED) password_checker will keep users from choosing too
     # short or too easy passwords. If you don't like this and your site has
@@ -168,5 +183,4 @@ class Config(multiconfig.DefaultConfig):
 
     # Enable graphical charts, requires gdchart.
     #chart_options = {'width': 600, 'height': 300}
-
 
