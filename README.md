@@ -23,7 +23,7 @@ MoinMoin has many different configuration options, you can configure this by for
 ### Disable HTTPS / SSL
 If you do not need HTTPS you can disable it by passing the -e NOSSL environment variable
 
-    sudo docker run -d -p 80:80 -e NOSSL --name my_wiki olavgg/moinmoin-wiki
+    sudo docker run -d -p 80:80 -e NOSSL=1 --name my_wiki olavgg/moinmoin-wiki
 
 Pull requests are very welcome.
 
