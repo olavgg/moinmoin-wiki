@@ -1,10 +1,11 @@
 #!/usr/bin/env sh
 
-# If the data folder is empty it is most likely because
+# If the data folder does not contain file 'initialized' it is most likely because
 # the container is fresh and has been started with
 # the volume option
-if ! [ "$(ls -A /usr/local/share/moin/data)" ]; then
+if ! [ "$(ls -A /usr/local/share/moin/data/initialized 2>/dev/null)" ]; then
     cp -r /usr/local/share/moin/bootstrap-data/* /usr/local/share/moin/data/
+    touch /usr/local/share/moin/data/initialized
     chown -R www-data:www-data /usr/local/share/moin/data
 fi
 
